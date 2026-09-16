@@ -1,0 +1,4 @@
+-- Fundação do monorepo.
+-- Nenhum schema de negócio ainda: esta migration valida o pipeline
+-- de migrações (db:migrate) contra o banco local do docker-compose.
+-- O histórico fica em supabase_migrations.schema_migrations.
