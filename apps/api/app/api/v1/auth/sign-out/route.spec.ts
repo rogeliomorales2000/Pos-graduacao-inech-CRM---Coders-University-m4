@@ -1,24 +1,20 @@
-import { randomUUID } from "node:crypto";
-
 import { NextRequest } from "next/server";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { db } from "@/lib/db";
 import {
   createSession,
   getSessionByToken,
   SESSION_COOKIE,
 } from "@/lib/auth/sessions";
+import { createTestUser, deleteUsers } from "@/tests/auth-helpers";
 import { POST } from "./route";
 
 describe("POST /api/v1/auth/sign-out", () => {
-  const createdIds: string[] = [];
+  const userIds: string[] = [];
 
   afterEach(async () => {
-    if (createdIds.length > 0) {
-      await db`delete from sessions where id = any(${createdIds})`;
-    }
-    createdIds.length = 0;
+    await deleteUsers(userIds);
+    userIds.length = 0;
   });
 
   function requestWithCookie(token?: string) {
@@ -33,8 +29,9 @@ describe("POST /api/v1/auth/sign-out", () => {
   }
 
   it("revoga a sessão corrente, limpa o cookie e responde 200", async () => {
-    const created = await createSession(randomUUID());
-    createdIds.push(created.id);
+    const { user } = await createTestUser();
+    userIds.push(user.id);
+    const created = await createSession(user.id);
 
     const res = await POST(requestWithCookie(created.token));
 
@@ -68,10 +65,10 @@ describe("POST /api/v1/auth/sign-out", () => {
   });
 
   it("não revoga outras sessões do mesmo usuário", async () => {
-    const userId = randomUUID();
-    const first = await createSession(userId);
-    const second = await createSession(userId);
-    createdIds.push(first.id, second.id);
+    const { user } = await createTestUser();
+    userIds.push(user.id);
+    const first = await createSession(user.id);
+    const second = await createSession(user.id);
 
     await POST(requestWithCookie(first.token));
 

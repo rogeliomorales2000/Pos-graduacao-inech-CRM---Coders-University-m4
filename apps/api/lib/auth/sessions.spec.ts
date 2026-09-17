@@ -10,18 +10,20 @@ import {
   isSessionValid,
   revokeSession,
 } from "./sessions";
+import { createTestUser, deleteUsers } from "@/tests/auth-helpers";
 
 describe("sessions", () => {
+  let userIds: string[];
   let createdIds: string[];
 
   beforeEach(() => {
+    userIds = [];
     createdIds = [];
   });
 
   afterEach(async () => {
-    if (createdIds.length > 0) {
-      await db`delete from sessions where id = any(${createdIds})`;
-    }
+    await deleteUsers(userIds);
+    createdIds.length = 0;
   });
 
   it("hashToken produz hash sha-256 determinístico", () => {
@@ -30,12 +32,13 @@ describe("sessions", () => {
   });
 
   it("createSession persiste sessão e devolve o token em claro", async () => {
-    const userId = randomUUID();
-    const created = await createSession(userId);
+    const { user } = await createTestUser();
+    userIds.push(user.id);
+    const created = await createSession(user.id);
     createdIds.push(created.id);
 
     expect(created.token).toBeTruthy();
-    expect(created.user_id).toBe(userId);
+    expect(created.user_id).toBe(user.id);
     expect(created.revoked_at).toBeNull();
     expect(created.expires_at.getTime()).toBeGreaterThan(Date.now());
 
@@ -50,7 +53,9 @@ describe("sessions", () => {
   });
 
   it("revokeSession marca revoked_at e invalida a sessão", async () => {
-    const created = await createSession(randomUUID());
+    const { user } = await createTestUser();
+    userIds.push(user.id);
+    const created = await createSession(user.id);
     createdIds.push(created.id);
 
     await revokeSession(created.id);
@@ -62,7 +67,9 @@ describe("sessions", () => {
   });
 
   it("sessão expirada é inválida", async () => {
-    const created = await createSession(randomUUID(), -1);
+    const { user } = await createTestUser();
+    userIds.push(user.id);
+    const created = await createSession(user.id, -1);
     createdIds.push(created.id);
 
     const row = await getSessionByToken(created.token);
@@ -70,10 +77,14 @@ describe("sessions", () => {
   });
 
   it("sessão revogada não é válida mesmo sem expirar", async () => {
-    const created = await createSession(randomUUID(), 60_000);
+    const { user } = await createTestUser();
+    userIds.push(user.id);
+    const created = await createSession(user.id, 60_000);
     createdIds.push(created.id);
     await revokeSession(created.id);
 
-    expect(isSessionValid(await getSessionByToken(created.token))).toBe(false);
+    expect(
+      isSessionValid(await getSessionByToken(created.token)),
+    ).toBe(false);
   });
 });

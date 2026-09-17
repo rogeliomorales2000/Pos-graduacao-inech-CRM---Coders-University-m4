@@ -77,6 +77,39 @@ O `docker-compose.yml` na raiz sobe o banco de desenvolvimento e a stack de obse
 - `packages/typescript-config` — tsconfigs compartilhados (`@repo/typescript-config`)
 - `.docs` — documentação do projeto
 
+## Convenções do produto
+
+### Idioma (en-us)
+
+- Todo texto **exposto** é escrito em **en-us** (inglês en-US): páginas, mensagens
+  de erro, emails, documentação de API, nomes de endpoints e de campos.
+- Código (identificadores, tipos, comentários) e mensagens de commit seguem en-us.
+- Rotas de auth são **públicas** (`/auth/*`); o restante é **privado** (`/app/*`)
+  e exige sessão válida (guard do cliente).
+
+### Versionamento de API
+
+- Todo endpoint novo vive sob **`/api/v1/*`**; autenticação sob `/api/v1/auth/*`.
+- Erros seguem `{ error: { code, message, fields? } }` (ex.: `VALIDATION_ERROR`
+  com `fields`, `EMAIL_ALREADY_REGISTERED`, `INVALID_CREDENTIALS`).
+- Endpoints de auth atuais: `POST /api/v1/auth/sign-up`,
+  `/confirm-account`, `/sign-in`, `/resend-confirmation`, `/forgot-password`,
+  `/reset-password`; `GET /api/v1/auth/me`; `POST /api/v1/auth/sign-out`.
+- Sub-rotas inexistentes sob `/api/v1/auth` respondem 404 JSON no mesmo formato.
+
+## Email (auth)
+
+- Provider selecionado por **`EMAIL_PROVIDER`**:
+  - `console` — default em dev; loga o conteúdo do email (token/link visíveis)
+    para validar o fluxo sem credenciais.
+  - `mailtrap` — ambientes **não-produção**; requer `MAILTRAP_API_TOKEN`.
+  - `resend` — **produção**; requer `RESEND_API_KEY` (default em produção).
+- `APP_URL` monta os links de confirmação/reset (default `http://localhost:5173`);
+  `EMAIL_FROM` define o remetente.
+- Credenciais **só via `.env`** (nunca no repositório); `.env.example` lista as
+  variáveis (`EMAIL_PROVIDER`, `MAILTRAP_API_TOKEN`, `RESEND_API_KEY`,
+  `EMAIL_FROM`, `APP_URL`, `DB_URL`).
+
 ## Workflow de código
 
 ### Convenção de commits

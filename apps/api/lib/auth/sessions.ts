@@ -51,6 +51,14 @@ export async function revokeSession(id: string): Promise<void> {
   `;
 }
 
+export async function revokeAllSessionsForUser(userId: string): Promise<void> {
+  await db`
+    update sessions
+    set revoked_at = now()
+    where user_id = ${userId} and revoked_at is null
+  `;
+}
+
 export async function getSessionByToken(
   token: string,
 ): Promise<Session | null> {

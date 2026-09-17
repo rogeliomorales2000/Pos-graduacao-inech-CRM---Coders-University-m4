@@ -13,6 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "next": "16.3.4",
     "postgres": "^3.4.9",
     "react": "19.2.8",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "26.4.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",

@@ -1,24 +1,20 @@
-import { randomUUID } from "node:crypto";
-
 import { NextRequest } from "next/server";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { db } from "@/lib/db";
 import {
   createSession,
   revokeSession,
   SESSION_COOKIE,
 } from "@/lib/auth/sessions";
+import { createTestUser, deleteUsers } from "@/tests/auth-helpers";
 import { GET } from "./route";
 
 describe("GET /api/v1/auth/me", () => {
-  const createdIds: string[] = [];
+  const userIds: string[] = [];
 
   afterEach(async () => {
-    if (createdIds.length > 0) {
-      await db`delete from sessions where id = any(${createdIds})`;
-    }
-    createdIds.length = 0;
+    await deleteUsers(userIds);
+    userIds.length = 0;
   });
 
   function requestWithCookie(token?: string) {
@@ -39,19 +35,20 @@ describe("GET /api/v1/auth/me", () => {
   });
 
   it("com sessão válida responde o id do usuário", async () => {
-    const userId = randomUUID();
-    const created = await createSession(userId);
-    createdIds.push(created.id);
+    const { user } = await createTestUser();
+    userIds.push(user.id);
+    const created = await createSession(user.id);
 
     const res = await GET(requestWithCookie(created.token));
 
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ user: { id: userId } });
+    expect(await res.json()).toEqual({ user: { id: user.id } });
   });
 
   it("com sessão revogada responde 401 e limpa o cookie", async () => {
-    const created = await createSession(randomUUID());
-    createdIds.push(created.id);
+    const { user } = await createTestUser();
+    userIds.push(user.id);
+    const created = await createSession(user.id);
     await revokeSession(created.id);
 
     const res = await GET(requestWithCookie(created.token));
