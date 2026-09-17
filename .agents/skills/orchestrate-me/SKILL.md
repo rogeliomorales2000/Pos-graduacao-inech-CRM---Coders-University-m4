@@ -100,6 +100,17 @@ Após todos `-done.md` da leva:
 
 Subagents deixaram a árvore de trabalho com as mudanças. Agora **você** commita, uma spec por vez, na ordem das levas:
 
+> **Hook no caminho:** o repo usa `lefthook` cujo hook `commit-msg` roda `bunx commitlint`; o `bunx` só existe em `~/.bun/bin`, e o `commitlint` quebra sob o node do sistema (v18) com `SyntaxError: Invalid regular expression flags`. Para todo `git commit`, exporte:
+>
+> ```bash
+> mkdir -p /tmp/opencode/pathwrap
+> printf '#!/bin/sh\nexec /home/izanami/.bun/bin/bun "$@"\n' > /tmp/opencode/pathwrap/node
+> chmod +x /tmp/opencode/pathwrap/node
+> export PATH="/tmp/opencode/pathwrap:$HOME/.bun/bin:$PATH"
+> ```
+>
+> Sem isso o commit falha de forma escondida (hook aborta silenciosamente). As mensagens levam o trailer `Co-authored-by: Joaldo Lima <jasmon.rogelio@uni9.edu.br>`.
+
 1. Para cada spec, leia `./.orchestration/<run-id>/<NNN>-done.md` → lista de paths alterados.
 2. `git add <paths da spec em questão>` (só os dela).
 3. `git commit -m "<conventional> ..."` com o co-author **Joaldo Lima** (`Co-authored-by: Joaldo Lima <jasmon.rogelio@uni9.edu.br>`); mensagem no padrão do repo (ex.: `feat(api, app): spec 003 — sign-up`).
