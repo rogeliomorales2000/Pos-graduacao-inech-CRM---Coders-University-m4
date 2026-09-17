@@ -15,6 +15,19 @@ export function getAppUrl(): string {
 const EMAIL_FROM =
   process.env.EMAIL_FROM ?? "Intech CRM <no-reply@intech.local>";
 
+export function parseEmailSender(
+  sender: string,
+): { email: string; name?: string } {
+  const match = sender.match(/^(.*)<([^>]+)>\s*$/);
+  if (match) {
+    const [, rawName = "", rawEmail = ""] = match;
+    const name = rawName.trim();
+    const email = rawEmail.trim();
+    return email ? (name ? { email, name } : { email }) : { email: sender.trim() };
+  }
+  return { email: sender.trim() };
+}
+
 export class ConsoleEmailProvider implements EmailProvider {
   async send(message: EmailMessage): Promise<void> {
     console.info(
@@ -50,25 +63,34 @@ export class ResendEmailProvider implements EmailProvider {
 }
 
 export class MailtrapEmailProvider implements EmailProvider {
-  constructor(private readonly apiToken = process.env.MAILTRAP_API_TOKEN) {}
+  constructor(
+    private readonly apiToken = process.env.MAILTRAP_API_TOKEN,
+    private readonly sandboxId = process.env.MAILTRAP_SANDBOX_ID,
+  ) {}
 
   async send(message: EmailMessage): Promise<void> {
     if (!this.apiToken) {
       throw new Error("MAILTRAP_API_TOKEN is not configured.");
     }
-    const response = await fetch("https://send.api.mailtrap.io/api/send", {
-      method: "POST",
-      headers: {
-        "api-token": this.apiToken,
-        "content-type": "application/json",
+    if (!this.sandboxId) {
+      throw new Error("MAILTRAP_SANDBOX_ID is not configured.");
+    }
+    const response = await fetch(
+      `https://sandbox.api.mailtrap.io/api/send/${this.sandboxId}`,
+      {
+        method: "POST",
+        headers: {
+          "api-token": this.apiToken,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          from: parseEmailSender(EMAIL_FROM),
+          to: [{ email: message.to }],
+          subject: message.subject,
+          text: message.text,
+        }),
       },
-      body: JSON.stringify({
-        from: { email: EMAIL_FROM },
-        to: [{ email: message.to }],
-        subject: message.subject,
-        text: message.text,
-      }),
-    });
+    );
     if (!response.ok) {
       throw new Error(`Mailtrap request failed with status ${response.status}.`);
     }

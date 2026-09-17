@@ -102,13 +102,14 @@ O `docker-compose.yml` na raiz sobe o banco de desenvolvimento e a stack de obse
 - Provider selecionado por **`EMAIL_PROVIDER`**:
   - `console` — default em dev; loga o conteúdo do email (token/link visíveis)
     para validar o fluxo sem credenciais.
-  - `mailtrap` — ambientes **não-produção**; requer `MAILTRAP_API_TOKEN`.
+  - `mailtrap` — ambientes **não-produção**; requer `MAILTRAP_API_TOKEN` e
+    `MAILTRAP_SANDBOX_ID` (id do sandbox/Email Testing no Painel de Testes).
   - `resend` — **produção**; requer `RESEND_API_KEY` (default em produção).
 - `APP_URL` monta os links de confirmação/reset (default `http://localhost:5173`);
   `EMAIL_FROM` define o remetente.
 - Credenciais **só via `.env`** (nunca no repositório); `.env.example` lista as
-  variáveis (`EMAIL_PROVIDER`, `MAILTRAP_API_TOKEN`, `RESEND_API_KEY`,
-  `EMAIL_FROM`, `APP_URL`, `DB_URL`).
+  variáveis (`EMAIL_PROVIDER`, `MAILTRAP_API_TOKEN`, `MAILTRAP_SANDBOX_ID`,
+  `RESEND_API_KEY`, `EMAIL_FROM`, `APP_URL`, `DB_URL`).
 
 ## Workflow de código
 
