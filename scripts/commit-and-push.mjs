@@ -28,6 +28,10 @@ function stdout(cmd, args) {
   return run(cmd, args).stdout.trim();
 }
 
+function rawOutput(cmd, args) {
+  return run(cmd, args).stdout.replace(/\n+$/, "");
+}
+
 function isGitRepo() {
   const res = run("git", ["rev-parse", "--is-inside-work-tree"]);
   return res.status === 0 && res.stdout.trim() === "true";
@@ -188,7 +192,7 @@ function wrapBodyLine(line, width) {
 }
 
 function parseStatus() {
-  const raw = stdout("git", ["status", "--porcelain=v1", "-uall"]);
+  const raw = rawOutput("git", ["status", "--porcelain=v1", "-uall"]);
   if (!raw) return [];
   return raw.split("\n").filter(Boolean).map((line) => {
     const status = line.slice(0, 2);
