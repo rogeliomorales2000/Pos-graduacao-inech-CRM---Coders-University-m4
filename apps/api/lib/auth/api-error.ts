@@ -23,4 +23,3 @@ export function validationError(
 export function readJson(request: Request): Promise<unknown> {
   return request.json().catch(() => null);
 }
-

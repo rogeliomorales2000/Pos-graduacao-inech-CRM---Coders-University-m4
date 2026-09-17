@@ -61,10 +61,12 @@ describe("POST /api/v1/auth/resend-confirmation", () => {
 
     const tokens = await confirmationTokens(user.id);
     expect(tokens).toHaveLength(1);
-    expect(await db<{ token_hash: string }[]>`
+    expect(
+      await db<{ token_hash: string }[]>`
       select token_hash from email_confirmation_tokens
       where user_id = ${user.id} and token_hash = ${hashToken(token)}
-    `).toHaveLength(1);
+    `,
+    ).toHaveLength(1);
   });
 
   it("email inexistente responde 200 genérico sem enviar email", async () => {
@@ -103,7 +105,11 @@ describe("POST /api/v1/auth/resend-confirmation", () => {
 
     const tokens = await confirmationTokens(user.id);
     expect(tokens).toHaveLength(2);
-    expect(tokens.filter((token) => token.consumed_at !== null)).toHaveLength(1);
-    expect(tokens.filter((token) => token.consumed_at === null)).toHaveLength(1);
+    expect(tokens.filter((token) => token.consumed_at !== null)).toHaveLength(
+      1,
+    );
+    expect(tokens.filter((token) => token.consumed_at === null)).toHaveLength(
+      1,
+    );
   });
 });

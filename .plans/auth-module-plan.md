@@ -17,7 +17,7 @@ O usuário pediu os forms com campos de email/senha/telefone, aplicando as specs
 - **confirm-account**: `POST /api/v1/auth/confirm-account` + página
   `/auth/confirm-account` (dependência do sign-in).
 - **sign-in**: `POST /api/v1/auth/sign-in` + `POST /api/v1/auth/resend-confirmation`
-  + página `/auth/sign-in`.
+  - página `/auth/sign-in`.
 - **forgot-password**: `POST /api/v1/auth/forgot-password` + página.
 - **reset-password**: `POST /api/v1/auth/reset-password` + página.
 

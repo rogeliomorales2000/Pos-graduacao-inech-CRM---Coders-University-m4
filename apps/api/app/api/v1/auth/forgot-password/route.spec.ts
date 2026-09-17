@@ -90,9 +90,7 @@ describe("POST /api/v1/auth/forgot-password", () => {
     const { user, email } = await createTestUser();
     userIds.push(user.id);
 
-    const res = await POST(
-      forgotRequest({ email, phone: "+5511900000000" }),
-    );
+    const res = await POST(forgotRequest({ email, phone: "+5511900000000" }));
 
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true });

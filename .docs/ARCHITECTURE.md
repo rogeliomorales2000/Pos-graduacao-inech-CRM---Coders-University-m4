@@ -35,29 +35,29 @@ coder-university-m4/
 
 ### Stack front-end
 
-| Ferramenta     | Status       | Papel                                         |
-| -------------- | ------------ | --------------------------------------------- |
-| Next.js 16     | Implementado | Aplicações web e API (`web`/`docs`/`api`)     |
-| React 19       | Implementado | Criação de UIs                                |
-| Vite           | Implementado | Build do cliente `@apps/app` (ver ADR `0001`) |
+| Ferramenta     | Status       | Papel                                                              |
+| -------------- | ------------ | ------------------------------------------------------------------ |
+| Next.js 16     | Implementado | Aplicações web e API (`web`/`docs`/`api`)                          |
+| React 19       | Implementado | Criação de UIs                                                     |
+| Vite           | Implementado | Build do cliente `@apps/app` (ver ADR `0001`)                      |
 | React Router   | Implementado | Rotas do cliente: `/auth/*` público, `/app/*` privado (ADR `0004`) |
-| TypeScript 7   | Implementado | Tipagem                                       |
-| TailwindCSS    | **Alvo**     | Estilização / CSS                             |
-| shadcn         | **Alvo**     | Design system (ver `DESING_SYSTEM.md`)        |
-| Tanstack Query | **Alvo**     | Queries e mutations                           |
-| Tanstack Table | **Alvo**     | Tabelas                                       |
+| TypeScript 7   | Implementado | Tipagem                                                            |
+| TailwindCSS    | **Alvo**     | Estilização / CSS                                                  |
+| shadcn         | **Alvo**     | Design system (ver `DESING_SYSTEM.md`)                             |
+| Tanstack Query | **Alvo**     | Queries e mutations                                                |
+| Tanstack Table | **Alvo**     | Tabelas                                                            |
 
 ### Stack back-end
 
-| Ferramenta     | Status       | Papel                                              |
-| -------------- | ------------ | -------------------------------------------------- |
-| Next.js 16     | Implementado | Criação de API (Route Handlers / Server Actions)   |
-| Auth custom    | Implementado | Sessões, tokens e senhas (bcrypt + sha-256) — ADR `0005` |
-| Supabase       | **Alvo**     | Banco de Dados + Storage (auth é próprio — ADR `0005`) |
-| Postgres local | Implementado | Banco de dados de desenvolvimento (Docker Compose) |
-| Bcrypt         | Implementado | Hash de senhas                                     |
+| Ferramenta     | Status       | Papel                                                              |
+| -------------- | ------------ | ------------------------------------------------------------------ |
+| Next.js 16     | Implementado | Criação de API (Route Handlers / Server Actions)                   |
+| Auth custom    | Implementado | Sessões, tokens e senhas (bcrypt + sha-256) — ADR `0005`           |
+| Supabase       | **Alvo**     | Banco de Dados + Storage (auth é próprio — ADR `0005`)             |
+| Postgres local | Implementado | Banco de dados de desenvolvimento (Docker Compose)                 |
+| Bcrypt         | Implementado | Hash de senhas                                                     |
 | Email          | Implementado | Envio de emails de auth: console (dev) / Mailtrap / Resend por env |
-| TypeScript 7   | Implementado | Tipagem                                            |
+| TypeScript 7   | Implementado | Tipagem                                                            |
 
 ### Domínio de auth (implementado)
 
@@ -81,16 +81,16 @@ coder-university-m4/
 
 ### Infraestrutura
 
-| Item                 | Status       | Papel                                               |
-| -------------------- | ------------ | --------------------------------------------------- |
-| Vercel               | **Alvo**     | Deploy da aplicação                                 |
-| Supabase (Auth)      | Fora do escopo | Substituído por auth custom + bcrypt (ADR `0005`) |
-| Supabase (Storage)   | **Alvo**     | Armazenamento de arquivos                           |
-| Email (Mailtrap/Resend) | Implementado | Envio de emails de auth (provider por `EMAIL_PROVIDER`) |
-| PostgreSQL local     | Implementado | Banco de dados local (Docker Compose)               |
-| LGTM (Grafana Stack) | Implementado | Observabilidade local (Loki, Grafana, Tempo, Mimir) |
-| Lefthook             | Implementado | Scripts em hooks do git (commit-msg: commitlint)    |
-| lint-staged          | **Alvo**     | Formatação de arquivos em `git add`                 |
+| Item                    | Status         | Papel                                                   |
+| ----------------------- | -------------- | ------------------------------------------------------- |
+| Vercel                  | **Alvo**       | Deploy da aplicação                                     |
+| Supabase (Auth)         | Fora do escopo | Substituído por auth custom + bcrypt (ADR `0005`)       |
+| Supabase (Storage)      | **Alvo**       | Armazenamento de arquivos                               |
+| Email (Mailtrap/Resend) | Implementado   | Envio de emails de auth (provider por `EMAIL_PROVIDER`) |
+| PostgreSQL local        | Implementado   | Banco de dados local (Docker Compose)                   |
+| LGTM (Grafana Stack)    | Implementado   | Observabilidade local (Loki, Grafana, Tempo, Mimir)     |
+| Lefthook                | Implementado   | Scripts em hooks do git (commit-msg: commitlint)        |
+| lint-staged             | **Alvo**       | Formatação de arquivos em `git add`                     |
 
 ## Ferramentas de qualidade atuais (verificáveis)
 

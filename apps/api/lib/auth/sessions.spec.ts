@@ -83,8 +83,6 @@ describe("sessions", () => {
     createdIds.push(created.id);
     await revokeSession(created.id);
 
-    expect(
-      isSessionValid(await getSessionByToken(created.token)),
-    ).toBe(false);
+    expect(isSessionValid(await getSessionByToken(created.token))).toBe(false);
   });
 });

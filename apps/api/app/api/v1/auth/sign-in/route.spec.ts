@@ -19,9 +19,7 @@ function signInRequest(body: unknown) {
   });
 }
 
-async function activeSessions(
-  userId: string,
-): Promise<{ id: string }[]> {
+async function activeSessions(userId: string): Promise<{ id: string }[]> {
   return db<{ id: string }[]>`
     select id from sessions where user_id = ${userId} and revoked_at is null
   `;

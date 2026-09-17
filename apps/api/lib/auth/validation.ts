@@ -3,8 +3,7 @@ export const PASSWORD_MIN_LENGTH = 8;
 export type ValidationErrors = Record<string, string>;
 
 export type ValidationResult<T> =
-  | { ok: true; value: T }
-  | { ok: false; errors: ValidationErrors };
+  { ok: true; value: T } | { ok: false; errors: ValidationErrors };
 
 export function asRecord(input: unknown): Record<string, unknown> {
   if (input && typeof input === "object" && !Array.isArray(input)) {

@@ -7,7 +7,10 @@ interface FormAlertProps {
   children: ReactNode;
 }
 
-export default function FormAlert({ tone = "error", children }: FormAlertProps) {
+export default function FormAlert({
+  tone = "error",
+  children,
+}: FormAlertProps) {
   return (
     <p
       className="form-alert"

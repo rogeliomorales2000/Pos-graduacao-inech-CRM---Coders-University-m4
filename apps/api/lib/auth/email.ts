@@ -15,15 +15,20 @@ export function getAppUrl(): string {
 const EMAIL_FROM =
   process.env.EMAIL_FROM ?? "Intech CRM <no-reply@intech.local>";
 
-export function parseEmailSender(
-  sender: string,
-): { email: string; name?: string } {
+export function parseEmailSender(sender: string): {
+  email: string;
+  name?: string;
+} {
   const match = sender.match(/^(.*)<([^>]+)>\s*$/);
   if (match) {
     const [, rawName = "", rawEmail = ""] = match;
     const name = rawName.trim();
     const email = rawEmail.trim();
-    return email ? (name ? { email, name } : { email }) : { email: sender.trim() };
+    return email
+      ? name
+        ? { email, name }
+        : { email }
+      : { email: sender.trim() };
   }
   return { email: sender.trim() };
 }
@@ -92,7 +97,9 @@ export class MailtrapEmailProvider implements EmailProvider {
       },
     );
     if (!response.ok) {
-      throw new Error(`Mailtrap request failed with status ${response.status}.`);
+      throw new Error(
+        `Mailtrap request failed with status ${response.status}.`,
+      );
     }
   }
 }
@@ -119,7 +126,10 @@ export interface EmailService {
     confirmationLink: string;
   }): Promise<void>;
   sendNewSessionEmail(args: { to: string }): Promise<void>;
-  sendPasswordResetEmail(args: { to: string; resetLink: string }): Promise<void>;
+  sendPasswordResetEmail(args: {
+    to: string;
+    resetLink: string;
+  }): Promise<void>;
   sendPasswordResetSuccess(args: { to: string }): Promise<void>;
 }
 
