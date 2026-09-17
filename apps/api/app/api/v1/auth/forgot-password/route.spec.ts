@@ -20,11 +20,15 @@ function forgotRequest(body: unknown) {
   });
 }
 
-async function resetTokenHashes(
-  userId: string,
-): Promise<{ token_hash: string; consumed_at: Date | null }[]> {
-  return db<{ token_hash: string; consumed_at: Date | null }[]>`
-    select token_hash, consumed_at from password_reset_tokens
+interface StoredResetToken {
+  token_hash: string;
+  consumed_at: Date | null;
+  expires_at: Date;
+}
+
+async function resetTokenHashes(userId: string): Promise<StoredResetToken[]> {
+  return db<StoredResetToken[]>`
+    select token_hash, consumed_at, expires_at from password_reset_tokens
     where user_id = ${userId} order by created_at desc
   `;
 }
@@ -63,6 +67,23 @@ describe("POST /api/v1/auth/forgot-password", () => {
     expect(tokens).toHaveLength(1);
     expect(tokens[0]?.token_hash).toBe(hashToken(token));
     expect(tokens[0]?.consumed_at).toBeNull();
+  });
+
+  it("gera token com expiração de 30 minutos", async () => {
+    const { user, email, phone } = await createTestUser();
+    userIds.push(user.id);
+
+    const before = Date.now();
+    const res = await POST(forgotRequest({ email, phone }));
+
+    expect(res.status).toBe(200);
+    const tokens = await resetTokenHashes(user.id);
+    expect(tokens).toHaveLength(1);
+
+    const expiresAt = tokens[0]?.expires_at.getTime() ?? 0;
+    const expected = before + 30 * 60 * 1000;
+    expect(expiresAt).toBeGreaterThanOrEqual(expected - 60_000);
+    expect(expiresAt).toBeLessThanOrEqual(expected + 60_000);
   });
 
   it("novo pedido revoga o token anterior (só o último link vale)", async () => {
