@@ -234,8 +234,8 @@ function main() {
 
   const type = pickType(counts);
   const scope = pickScope(files);
-  const subject = FLAGS.message ?? pickSubject(type, scope, files);
-  const header = buildHeader(type, scope, subject);
+  const subject = pickSubject(type, scope, files);
+  const header = FLAGS.message ?? buildHeader(type, scope, subject);
   const body = buildBody(entries);
   const message = `${header}\n\n${body}`;
 
