@@ -65,7 +65,9 @@ describe("POST /api/v1/auth/sign-up", () => {
 
     expect(emails).toHaveLength(1);
     expect(emails[0]?.type).toBe("confirmation");
-    const token = tokenFromLink(emails[0]?.link);
+    const link = new URL(emails[0]?.link ?? "");
+    expect(link.pathname).toBe("/auth/confirm-account");
+    const token = tokenFromLink(link.toString());
     expect(token).toBeTruthy();
 
     const tokenRows = await db<{ token_hash: string }[]>`
