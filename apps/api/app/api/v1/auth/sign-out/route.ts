@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { apiError } from "@/lib/auth/api-error";
+import { clearSessionCookie } from "@/lib/auth/cookies";
 import {
   getSessionByToken,
   isSessionValid,
@@ -19,14 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     const response = NextResponse.json({ ok: true }, { status: 200 });
-    response.cookies.set(SESSION_COOKIE, "", {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      expires: new Date(0),
-    });
-    return response;
+    return clearSessionCookie(response);
   } catch (error) {
     console.error("sign-out failed:", error);
     return apiError("INTERNAL_ERROR", "Something went wrong.", 500);

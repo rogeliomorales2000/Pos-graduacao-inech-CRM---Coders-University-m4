@@ -7,6 +7,7 @@ import {
   SESSION_COOKIE,
 } from "@/lib/auth/sessions";
 import { createTestUser, deleteUsers } from "@/tests/auth-helpers";
+import { GET as me } from "../me/route";
 import { POST } from "./route";
 
 describe("POST /api/v1/auth/sign-out", () => {
@@ -17,13 +18,13 @@ describe("POST /api/v1/auth/sign-out", () => {
     userIds.length = 0;
   });
 
-  function requestWithCookie(token?: string) {
+  function requestWithCookie(token?: string, method = "POST") {
     const headers: Record<string, string> = {};
     if (token) {
       headers.cookie = `${SESSION_COOKIE}=${token}`;
     }
     return new NextRequest("http://localhost/api/v1/auth/sign-out", {
-      method: "POST",
+      method,
       headers,
     });
   }
@@ -48,6 +49,20 @@ describe("POST /api/v1/auth/sign-out", () => {
     expect(sessionCookie).toBeDefined();
     expect(sessionCookie).toMatch(/httponly/i);
     expect(sessionCookie).toMatch(/expires=Thu, 01 Jan 1970/i);
+  });
+
+  it("a sessão revogada deixa de autenticar (GET /me responde 401)", async () => {
+    const { user } = await createTestUser();
+    userIds.push(user.id);
+    const created = await createSession(user.id);
+
+    await POST(requestWithCookie(created.token));
+
+    const meRes = await me(requestWithCookie(created.token, "GET"));
+    expect(meRes.status).toBe(401);
+    expect(await meRes.json()).toMatchObject({
+      error: { code: "UNAUTHENTICATED" },
+    });
   });
 
   it("sem cookie de sessão responde 200 idempotente", async () => {
