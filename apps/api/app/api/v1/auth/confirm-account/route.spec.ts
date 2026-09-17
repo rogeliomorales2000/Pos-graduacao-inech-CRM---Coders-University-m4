@@ -2,11 +2,8 @@ import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { setEmailService } from "@/lib/auth/email";
-import { hashToken, SESSION_COOKIE } from "@/lib/auth/sessions";
-import {
-  createEmailConfirmationToken,
-  generateToken,
-} from "@/lib/auth/tokens";
+import { hashToken, createSession, SESSION_COOKIE } from "@/lib/auth/sessions";
+import { createEmailConfirmationToken, generateToken } from "@/lib/auth/tokens";
 import { findUserById } from "@/lib/auth/users";
 import { db } from "@/lib/db";
 import {
@@ -115,6 +112,25 @@ describe("POST /api/v1/auth/confirm-account", () => {
       select id from sessions where user_id = ${user.id}
     `;
     expect(sessions).toHaveLength(0);
+  });
+
+  it("confirmação segue a política de sessão única (nova sessão é a válida)", async () => {
+    const { user } = await createTestUser({ confirmed: false });
+    userIds.push(user.id);
+    const previous = await createSession(user.id);
+    const token = await createEmailConfirmationToken(user.id);
+
+    const res = await POST(confirmRequest({ token }));
+    expect(res.status).toBe(200);
+
+    const sessions = await db<
+      { id: string; revoked_at: Date | null }[]
+    >`select id, revoked_at from sessions where user_id = ${user.id}`;
+    const previousRow = sessions.find((row) => row.id === previous.id);
+    expect(previousRow?.revoked_at).not.toBeNull();
+
+    const valid = sessions.filter((row) => row.revoked_at === null);
+    expect(valid).toHaveLength(1);
   });
 
   it("token inválido retorna 400 INVALID_TOKEN", async () => {

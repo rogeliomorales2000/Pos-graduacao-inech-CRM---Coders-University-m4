@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { apiError, readJson, validationError } from "@/lib/auth/api-error";
 import { setSessionCookie } from "@/lib/auth/cookies";
-import { createSession } from "@/lib/auth/sessions";
+import { createSession, revokeAllSessionsForUser } from "@/lib/auth/sessions";
 import {
   consumeEmailConfirmationToken,
   getEmailConfirmationTokenByToken,
@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
 
     await consumeEmailConfirmationToken(record.id);
     await confirmUser(user.id);
+    await revokeAllSessionsForUser(user.id);
     const session = await createSession(user.id);
 
     const confirmedUser = (await findUserById(user.id)) ?? user;

@@ -41,11 +41,11 @@ export default function ConfirmAccountPage() {
 
   return (
     <AuthShell
-      title={failed ? "We could not confirm your account" : "Confirming your account"}
+      title={
+        failed ? "We could not confirm your account" : "Confirming your account"
+      }
       intro={
-        failed
-          ? undefined
-          : "Hold on while we activate your workspace access."
+        failed ? undefined : "Hold on while we activate your workspace access."
       }
     >
       {failed ? (
