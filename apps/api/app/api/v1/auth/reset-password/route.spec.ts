@@ -11,10 +11,19 @@ import {
   createTestUser,
   deleteUsers,
 } from "@/tests/auth-helpers";
+import { POST as signInPOST } from "../sign-in/route";
 import { POST } from "./route";
 
 function resetRequest(body: unknown) {
   return new NextRequest("http://localhost/api/v1/auth/reset-password", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+function signInRequest(body: unknown) {
+  return new NextRequest("http://localhost/api/v1/auth/sign-in", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body),
@@ -85,6 +94,43 @@ describe("POST /api/v1/auth/reset-password", () => {
     expect((await resetTokenRow(user.id))?.consumed_at).not.toBeNull();
     expect(emails).toHaveLength(1);
     expect(emails[0]?.type).toBe("reset-success");
+  });
+
+  it("após reset, a senha antiga não loga e a nova loga no sign-in", async () => {
+    const { user, email, phone, password } = await createTestUser({
+      confirmed: true,
+    });
+    userIds.push(user.id);
+    const token = await createPasswordResetToken(user.id);
+    const newPassword = "new-secure-password";
+
+    const res = await POST(
+      resetRequest({
+        token,
+        new_password: newPassword,
+        confirm_password: newPassword,
+      }),
+    );
+    expect(res.status).toBe(200);
+
+    const oldSignIn = await signInPOST(
+      signInRequest({ email, password, phone }),
+    );
+    expect(oldSignIn.status).toBe(401);
+    expect(await oldSignIn.json()).toMatchObject({
+      error: { code: "INVALID_CREDENTIALS" },
+    });
+
+    const newSignIn = await signInPOST(
+      signInRequest({ email, password: newPassword, phone }),
+    );
+    expect(newSignIn.status).toBe(200);
+    expect(await newSignIn.json()).toMatchObject({ redirectTo: "/app/home" });
+    expect(
+      newSignIn.headers
+        .getSetCookie()
+        .some((cookie) => cookie.startsWith("session=")),
+    ).toBe(true);
   });
 
   it("revoga todas as sessões do usuário ao resetar", async () => {
