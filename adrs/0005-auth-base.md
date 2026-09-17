@@ -3,7 +3,7 @@
 - **Data**: 2026-09-17
 - **Status**: Aceito
 - **Decisores**: dono do produto / dono do repositório
-- **Spec**: `./.specs/auth-base.md` (+ sign-up, confirm-account, sign-in, forgot-password, reset-password, entregues na mesma iteração)
+- **Spec**: `./.specs/001-auth-base.md` (+ sign-up, confirm-account, sign-in, forgot-password, reset-password, entregues na mesma iteração)
 
 ## Contexto
 

@@ -1,6 +1,6 @@
 ---
 title: Auth base (fundação do domínio de autenticação)
-status: rascunho
+status: concluido
 created: 2026-09-17
 updated: 2026-09-17
 owner: izanami

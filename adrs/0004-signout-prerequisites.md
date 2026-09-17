@@ -3,7 +3,7 @@
 - **Data**: 2026-09-17
 - **Status**: Aceito
 - **Decisores**: dono do produto / dono do repositório
-- **Spec**: `./.specs/sign-out.md`
+- **Spec**: `./.specs/002-sign-out.md`
 
 ## Contexto
 

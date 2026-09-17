@@ -1,6 +1,6 @@
 ---
 title: Confirm account (confirmação de conta via email)
-status: rascunho
+status: concluido
 created: 2026-09-17
 updated: 2026-09-17
 owner: izanami
