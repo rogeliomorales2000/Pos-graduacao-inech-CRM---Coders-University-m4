@@ -1,6 +1,6 @@
 ---
 title: Sign-in (login)
-status: rascunho
+status: concluido
 created: 2026-09-17
 updated: 2026-09-17
 owner: izanami

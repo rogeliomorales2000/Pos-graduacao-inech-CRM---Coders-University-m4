@@ -1,6 +1,6 @@
 ---
 title: Forgot password (solicitar reset de senha)
-status: rascunho
+status: concluido
 created: 2026-09-17
 updated: 2026-09-17
 owner: izanami
