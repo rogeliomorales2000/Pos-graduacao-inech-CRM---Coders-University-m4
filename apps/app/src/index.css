@@ -44,3 +44,43 @@ h1 {
   letter-spacing: -0.03em;
   line-height: 1.05;
 }
+
+.auth-page,
+.app-page {
+  width: min(32rem, calc(100vw - 2.5rem));
+  text-align: center;
+}
+
+.auth-page p:not(:first-child),
+.app-page p {
+  color: color-mix(in srgb, var(--fg) 70%, transparent);
+}
+
+.eyebrow {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+button {
+  margin-top: 1.5rem;
+  padding: 0.65rem 1.25rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--fg) 40%, transparent);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
