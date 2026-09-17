@@ -17,7 +17,9 @@
     "prepare": "lefthook install",
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down",
-    "db:migrate": "supabase db push --db-url \"${DB_URL:-postgresql://postgres:postgres@localhost:54322/postgres}?sslmode=disable\""
+    "db:migrate": "supabase db push --db-url \"${DB_URL:-postgresql://postgres:postgres@localhost:54322/postgres}?sslmode=disable\"",
+    "env:setup" : "cp .env  .env.local",
+    "local:setup": "bun env:setup && bun run infra:up && bun run db:migrate"
   },
   "devDependencies": {
     "@babel/preset-typescript": "8.0.1",
