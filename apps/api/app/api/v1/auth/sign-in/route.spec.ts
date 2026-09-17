@@ -9,7 +9,14 @@ import {
   createTestUser,
   deleteUsers,
 } from "@/tests/auth-helpers";
+import { GET } from "../me/route";
 import { POST } from "./route";
+
+function requestWithCookie(token: string) {
+  return new NextRequest("http://localhost/api/v1/auth/me", {
+    headers: { cookie: `${SESSION_COOKIE}=${token}` },
+  });
+}
 
 function signInRequest(body: unknown) {
   return new NextRequest("http://localhost/api/v1/auth/sign-in", {
@@ -95,6 +102,29 @@ describe("POST /api/v1/auth/sign-in", () => {
 
     const active = await activeSessions(user.id);
     expect(active).toHaveLength(1);
+  });
+
+  it("após login na máquina B, a sessão da máquina A fica revogada e o guard de /me a barra", async () => {
+    const { user, email, phone, password } = await createTestUser({
+      confirmed: true,
+    });
+    userIds.push(user.id);
+
+    const machineA = await createSession(user.id);
+
+    const res = await POST(signInRequest({ email, phone, password }));
+    expect(res.status).toBe(200);
+
+    const previousRows = await db<{ revoked_at: Date | null }[]>`
+      select revoked_at from sessions where id = ${machineA.id}
+    `;
+    expect(previousRows[0]?.revoked_at).not.toBeNull();
+
+    const meRes = await GET(requestWithCookie(machineA.token));
+    expect(meRes.status).toBe(401);
+    expect(await meRes.json()).toMatchObject({
+      error: { code: "UNAUTHENTICATED" },
+    });
   });
 
   it("retorna 401 genérico para telefone incorreto e não cria sessão", async () => {
